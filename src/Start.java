@@ -1,9 +1,7 @@
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.math.BigInteger;
-import java.nio.ByteBuffer;
+
 
 public class Start {
 
@@ -34,7 +32,7 @@ public class Start {
             }
         }
 
-        Compressor c1  = new Compressor(byteString);
+        Compressor c1  = new Compressor(byteTable);
         System.out.println(c1.compress());
 
 

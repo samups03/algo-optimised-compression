@@ -1,60 +1,74 @@
 import java.nio.ByteBuffer;
 import java.nio.ShortBuffer;
+import java.lang.*;
+import java.util.Objects;
 
 public class Compressor {
+    private final int DICTIONNARY_SIZE = 256;
     private byte[] array;
-    private short[] dictionnary = new short[256];
-    private int compteur=1;
-    private ShortBuffer buffer;
+    private byte[] dictionnary = new byte[2048];
+    private int compteur=DICTIONNARY_SIZE;
+    private ByteBuffer buffer;
     private String byteString;
 
-    public Compressor(String byteString){
-        this.byteString = byteString;
+    public Compressor(byte[] array){
+        this.array = array.clone();
 
     }
 
     public int compress(){
-//        int returnValue = 0;
-//        short tempUse;
-//        short cursor = array[0];
-//        dictionnary[0] = cursor;
-//
-//        for(int i = 1; i< array.length; i++){
-//            short tempByte = this.array[i];
-//            tempUse = (short) ((cursor << 8) | tempByte);
-//
-//            if(elementOfArray(tempByte, dictionnary)){
-//                cursor = (short) ((cursor << 8) | tempByte);
-//                //System.out.print(cursor);
-//                dictionnary[compteur] = cursor;
-//            }
-//            else{
-//                dictionnary[compteur] = tempByte;
-//                cursor = tempByte;
-//            }
-//            compteur +=1;
-//        }
-//
-//        buffer = ShortBuffer.wrap(dictionnary);
-//        returnValue = buffer.get();
-//
-//        return returnValue;
-        while (this.byteString.length() > 0) {
-            String s = st.longestPrefixOf(this.byteString);  // Find max prefix match s.
-            BinaryStdOut.write(st.get(s), W);      // Print s's encoding.
-            int t = s.length();
-            if (t < this.byteString.length() && code < L)    // Add s to symbol table.
-                st.put(this.byteString.substring(0, t + 1), code++);
-            this.byteString = this.byteString.substring(t);            // Scan past s in input.
+        int returnValue = 0;
+        byte tempUse;
+        byte cursor = array[0];
+
+        initialiseDictionnary();
+
+        for(int i = 1; i< array.length; i++){
+            byte tempByte = this.array[i];
+            if(i<array.length - 1) {
+                cursor = this.array[i+1];
+            }
+            tempUse = (byte) (cursor + tempByte);
+
+            if(elementOfArray(tempByte, dictionnary)){
+                cursor = (byte) (cursor + tempByte);
+                while(elementOfArray(cursor, dictionnary)){
+                    tempByte = array[i+2];
+                    cursor = (byte)(cursor<<8 | tempByte);
+                }
+                System.out.print(cursor);
+                dictionnary[compteur] = cursor;
+            }
+            else{
+                dictionnary[compteur] = tempByte;
+                cursor = tempByte;
+            }
+            compteur +=1;
+        }
+
+        buffer = ByteBuffer.wrap(dictionnary);
+        returnValue = buffer.get();
+
+        return returnValue;
+
 
     }
 
-    private boolean elementOfArray(short texte, short[] dictionnary){
+    private void initialiseDictionnary(){
+
+        for(int i = 0; i<DICTIONNARY_SIZE; i++){
+            char tempCharacter = (char)i;
+            dictionnary[i] = (byte)tempCharacter;
+        }
+    }
+
+    private boolean elementOfArray(byte texte, byte[] dictionnary){
         boolean value = false;
+        boolean output;
 
-        for(short item: dictionnary){
-
-            if(texte == item)
+        for(byte item: dictionnary){
+            output = Objects.equals(texte, item);
+            if(output);
                value = true;
         }
         return value;
